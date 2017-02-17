@@ -1,26 +1,28 @@
 var allCats = [];
 
+//CReation of the Cat class
 var Cat = function (name, pic) {
     this.id = name;
     this.picture = pic;
     this.NBclicked = 0;
-    //    this.click = function(){$('#' + this.id + " img").click(function (e) {
-    //        this.clicked++;
-    //        $('#' + this.id + ' p').html(this.click);
-    //    })};
     this.displayOnPage = '<section id="' + this.id + '"><div><h2>' + this.id + '</h2><img src="' + this.picture + '"><p><strong>Clicks: </strong><span>' + this.NBclicked + '</span></p></div></section>';
+    //adds cats to an array
     allCats.push(this);
 };
 
+//instantiation of cats
 new Cat('Rusty', 'cat.jpg');
 new Cat('Quincy', 'cat3.jpg');
 
+
+//adds formatted cats to the page
 function displayCats() {
     for (var kitty in allCats) {
         $('body').append(allCats[kitty].displayOnPage);
     }
 }
 
+// depending on the cat name retrieved, increments the nb clicks
 function incrementClicks(kitten) {
     for (var kitty in allCats) {
         if (kitten == allCats[kitty].id) {
@@ -30,6 +32,7 @@ function incrementClicks(kitten) {
     }
 }
 
+//waits for the dom to be ready
 $(document).ready(function () {
 
     //call the function to display cats one by one
