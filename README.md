@@ -13,3 +13,5 @@ Put two pictures side by side with cat name and click number (that properly incr
 ## third iteration
 Add a list of cats and when one name is clicked, its photo, name and clicks nb appear in the display area. (only one image at a time).
 
+## fourth iteration
+The same thing, using the Model/View/Octopus system.
