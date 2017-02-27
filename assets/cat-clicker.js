@@ -1,87 +1,129 @@
-var allCats = [];
+$(function () {
 
-//CReation of the Cat class
-var Cat = function (name, pic) {
-    this.id = name;
-    this.picture = pic;
-    this.NBclicked = 0;
-    this.displayOnPage = '<section id="' + this.id + '"><div><h2>' + this.id + '</h2><img src="' + this.picture + '"><p><strong>Clicks: </strong><span></span></p></div></section>';
-    //adds cats to an array
-    allCats.push(this);
-};
+    //---------------------MODEL
+    var model = {
+        //instantiation of cats
+        init: function () {
+            new octopus.Cat('Rusty', 'img/cat.jpg');
+            new octopus.Cat('Blinky', 'img/cat2.jpg');
+            new octopus.Cat('Quincy', 'img/cat3.jpg');
+            new octopus.Cat('Queeny', 'img/cat4.jpg');
+            new octopus.Cat('Sleepy', 'img/cat5.jpg');
+            new octopus.Cat('Joel', 'img/cat7.jpg');
+        },
+    };
 
-//instantiation of cats
-new Cat('Rusty', 'cat.jpg');
-new Cat('Blinky', 'cat2.jpg');
-new Cat('Quincy', 'cat3.jpg');
-new Cat('Princess', 'cat4.jpg');
-new Cat('Godron', 'cat5.jpg');
+    //---------------------OCTOPUS
+    var octopus = {
 
+        init: function () {
+            model.init();
+            view.init();
+        },
 
-//adds formatted cats to the page
-function displayCats() {
-    for (var kitty in allCats) {
-        $('#display-area').append(allCats[kitty].displayOnPage);
-    }
-}
+        //Creation of the Cat class
+        Cat: function (name, pic) {
+            this.id = name;
+            this.picture = pic;
+            this.NBclicked = 0;
+            octopus.allCats.push(this);
+        },
+        // not wanting any variable outside the MOV structure, and
+        // being unable to use localstorage, and not wanting the view to call something from Model,
+        // the array of cats ends up here
+        allCats: [],
 
-//adds the clicked cat's image to the page
-function displayCat(kitten) {
-    for (var kitty in allCats) {
-        if (kitten == allCats[kitty].id) {
-            $('#display-area').html(' ');
-            $('#display-area').append(allCats[kitty].displayOnPage);
-            $('#display-area span').append(allCats[kitty].NBclicked);
+        // depending on the cat name retrieved, increments the nb clicks
+        incrementClicks: function (kitten) {
+            for (var kitty in octopus.allCats) {
+                if (kitten == octopus.allCats[kitty].id) {
+                    octopus.allCats[kitty].NBclicked++;
+                    $('#' + kitten + ' span').html(octopus.allCats[kitty].NBclicked);
+                }
+            }
+        },
+
+        // event listener for image clicks from display area
+        listenToImg: function () {
+            $('#display-area').on('click', 'img', function (el) {
+                var whichCat = $(this).closest('section').attr('id');
+                octopus.incrementClicks(whichCat);
+            });
+        },
+
+        // event listener for cat name clicks from list
+        listenToList: function () {
+            $('#names-list p').click(function (e) {
+                var selectedCat = $(this).html();
+               //console.log(selectedCat);
+                view.displayCat(selectedCat);
+            });
+        },
+        // event listener for admin button
+        listenToBtn: function () {
+            $('#display-area').on('click', '.admin-btn', function (elem) {
+                var whichCat = $(this).closest('section').attr('id');
+               view.displayAdminForm(whichCat);
+
+            });
+        },
+        randomCat: function () {
+            //Math.floor(Math.random() * (max - min +1)) + min;
+            var alleyCat = Math.floor(Math.random() * octopus.allCats.length);
+            view.displayCat(octopus.allCats[alleyCat].id);
         }
+    };
 
-    }
-}
+    //---------------------VIEW
+    var view = {
+        init: function(){
+            view.displayCatList();
+            octopus.randomCat();
+            octopus.listenToImg();
+            octopus.listenToList();
+            octopus.listenToBtn();
+        },
+        //adds the clicked cat's image to the page
+        displayCat: function (kitten) {
+            for (var selectedKitty in octopus.allCats) {
+                var thatCat = octopus.allCats[selectedKitty];
+                if (kitten == thatCat.id) {
+                    var htmlStr = '<section id="' + thatCat.id + '"><div class="polaroid"><h2>' + thatCat.id + '</h2><img src="' + thatCat.picture + '"><p><strong>Clicks: </strong><span></span></p></div><div id="admin"></section>';
+                    $('#display-area').html(' ').append(htmlStr);
+                    view.displayBtn('Admin');
+                    $('#display-area span').append(thatCat.NBclicked);
+                }
+            }
+        },
+        //adds cat list on the right
+        displayCatList: function () {
+            for (var kitty in octopus.allCats) {
+                $('#names-list').append('<p>' + octopus.allCats[kitty].id + '</p>');
+            }
+        },
+        // input with name
+        // input with img
+        // input with nb of clicks?
+        // cancel button
+        // save button
+        displayAdminForm: function(kittyAdm) {
+            $('.admin-btn').toggle();
+            var adminArea = $('#display-area #admin');
+            for (var selectedKitty in octopus.allCats) {
+                var thatCat = octopus.allCats[selectedKitty];
+                if (kittyAdm == thatCat.id) {
+                    var htmlStr = '<form id="admin-form"><label for="cat-id">Name</label><input type="text" id="cat-id" value="' + thatCat.id + '"><br><label for="cat-img">Image</label><input type="text" id="cat-img" value="' + thatCat.picture + '"><br><label for="cat-clicks">Nb clicks</label><input type="text" id="cat-clicks" value="' + thatCat.NBclicked + '"><br></form>';
+                    adminArea.append(htmlStr);
+                }
+            }
+            adminArea.append(view.displayBtn('Cancel')).append(view.displayBtn('Save'));
+        },
 
-//adds cat list on the right
-function displayCatList() {
-    for (var kitty in allCats) {
-        $('#names-list').append('<p>' + allCats[kitty].id + '</p>');
-    }
-}
-
-// depending on the cat name retrieved, increments the nb clicks
-function incrementClicks(kitten) {
-    for (var kitty in allCats) {
-        if (kitten == allCats[kitty].id) {
-            allCats[kitty].NBclicked++;
-            $('#' + kitten + ' span').html(allCats[kitty].NBclicked);
+        displayBtn: function (btnType){
+            $('#admin').append('<button class="admin-btn float-left">' + btnType + '</button></div>');
         }
-    }
-}
+    };
 
-
-
-//waits for the dom to be ready
-$(document).ready(function () {
-
-    //call the function to display cat names on the list on the right of the page
-    displayCatList();
-    //call the function to display cats one by one
-    //displayCats();
-
-
-    //listen to clicks and send which img was clicked to the function
-    //must use 'on' and the parent element
-    //event propagation requires to listen to something that existed already on the "on" function call
-    $('#display-area').on('click', 'img', function (el) {
-        var whichCat = $(this).closest('section').attr('id');
-        incrementClicks(whichCat);
-    });
-
-    $('#names-list p').click(function(e){
-        var selectedCat = $(this).html();
-        displayCat(selectedCat);
-    });
-
-//    $('img, #names-list p').on('click', function(e){
-//        alert(e);
-//    });
-
-
-
+    octopus.init();
 });
+
