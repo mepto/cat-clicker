@@ -55,7 +55,7 @@ $(function () {
         listenToList: function () {
             $('#names-list p').click(function (e) {
                 var selectedCat = $(this).html();
-               //console.log(selectedCat);
+                //console.log(selectedCat);
                 view.displayCat(selectedCat);
             });
         },
@@ -63,20 +63,33 @@ $(function () {
         listenToBtn: function () {
             $('#display-area').on('click', '.admin-btn', function (elem) {
                 var whichCat = $(this).closest('section').attr('id');
-               view.displayAdminForm(whichCat);
+                var currentBtn = $(this).html();
 
+                if (currentBtn == 'Admin') {
+                    $('.admin-btn').toggle();
+                    view.displayAdminForm(whichCat);
+                } else if (currentBtn == 'Save') {
+                    octopus.updateCat;
+                    $('#admin-form').remove();
+                } else if (currentBtn == 'Cancel') {
+                    $('#admin-form').remove();
+
+                }
             });
         },
         randomCat: function () {
             //Math.floor(Math.random() * (max - min +1)) + min;
             var alleyCat = Math.floor(Math.random() * octopus.allCats.length);
             view.displayCat(octopus.allCats[alleyCat].id);
+        },
+        updateCat: function(){
+
         }
     };
 
     //---------------------VIEW
     var view = {
-        init: function(){
+        init: function () {
             view.displayCatList();
             octopus.randomCat();
             octopus.listenToImg();
@@ -90,7 +103,7 @@ $(function () {
                 if (kitten == thatCat.id) {
                     var htmlStr = '<section id="' + thatCat.id + '"><div class="polaroid"><h2>' + thatCat.id + '</h2><img src="' + thatCat.picture + '"><p><strong>Clicks: </strong><span></span></p></div><div id="admin"></section>';
                     $('#display-area').html(' ').append(htmlStr);
-                    view.displayBtn('Admin');
+                    view.displayBtn('Admin', '#admin');
                     $('#display-area span').append(thatCat.NBclicked);
                 }
             }
@@ -101,13 +114,9 @@ $(function () {
                 $('#names-list').append('<p>' + octopus.allCats[kitty].id + '</p>');
             }
         },
-        // input with name
-        // input with img
-        // input with nb of clicks?
-        // cancel button
-        // save button
-        displayAdminForm: function(kittyAdm) {
-            $('.admin-btn').toggle();
+
+        displayAdminForm: function (kittyAdm) {
+
             var adminArea = $('#display-area #admin');
             for (var selectedKitty in octopus.allCats) {
                 var thatCat = octopus.allCats[selectedKitty];
@@ -116,14 +125,14 @@ $(function () {
                     adminArea.append(htmlStr);
                 }
             }
-            adminArea.append(view.displayBtn('Cancel')).append(view.displayBtn('Save'));
+            adminArea.append(view.displayBtn('Cancel', '#admin-form')).append(view.displayBtn('Save', '#admin-form'));
+
         },
 
-        displayBtn: function (btnType){
-            $('#admin').append('<button class="admin-btn float-left">' + btnType + '</button></div>');
+        displayBtn: function (btnType, DOMlocation) {
+            $(DOMlocation).append('<button class="admin-btn float-right">' + btnType + '</button>');
         }
     };
 
     octopus.init();
 });
-

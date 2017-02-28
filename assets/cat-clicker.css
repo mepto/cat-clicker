@@ -21,10 +21,14 @@ h2 {
 }
 
 .float-left {
-    float: left;
+   float: left;
+}
+.float-right {
+   float: right;
 }
 
 #main-area {
+
     text-align: center;
     width: 83%;
 }
@@ -55,6 +59,7 @@ h2 {
     clear: both;
     font-family: sans-serif;
     margin: 10px;
+    overflow: auto;
     padding: 10px;
     position: relative;
     text-align: left;
