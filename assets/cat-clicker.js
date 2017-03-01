@@ -64,16 +64,17 @@ $(function () {
             $('#display-area').on('click', '.admin-btn', function (elem) {
                 var whichCat = $(this).closest('section').attr('id');
                 var currentBtn = $(this).html();
-
                 if (currentBtn == 'Admin') {
-                    $('.admin-btn').toggle();
+                    $('.admin-btn.Admin').remove();
                     view.displayAdminForm(whichCat);
                 } else if (currentBtn == 'Save') {
                     octopus.updateCat;
                     $('#admin-form').remove();
+                    view.displayMessage('success');
+
                 } else if (currentBtn == 'Cancel') {
                     $('#admin-form').remove();
-
+                    view.displayBtn('Admin', '#admin');
                 }
             });
         },
@@ -82,8 +83,12 @@ $(function () {
             var alleyCat = Math.floor(Math.random() * octopus.allCats.length);
             view.displayCat(octopus.allCats[alleyCat].id);
         },
-        updateCat: function(){
-
+        updateCat: function () {
+            var thisCat = $(this).closest('section').attr('id');
+            octopus.allCats[thisCat].id = $(thisCat + ' #cat-id').value;
+            octopus.allCats[thisCat].picture = $(thisCat + ' #cat-img').value;
+            octopus.allCats[thisCat].NBclicked = $(thisCat + ' #cat-clicks').value;
+            view.displayCatList();
         }
     };
 
@@ -117,7 +122,8 @@ $(function () {
 
         displayAdminForm: function (kittyAdm) {
 
-            var adminArea = $('#display-area #admin');
+            var adminArea = $(document.body + ' #display-area #admin');
+            //var  = $body.// '#display-area #admin');
             for (var selectedKitty in octopus.allCats) {
                 var thatCat = octopus.allCats[selectedKitty];
                 if (kittyAdm == thatCat.id) {
@@ -125,12 +131,27 @@ $(function () {
                     adminArea.append(htmlStr);
                 }
             }
-            adminArea.append(view.displayBtn('Cancel', '#admin-form')).append(view.displayBtn('Save', '#admin-form'));
+            view.displayBtn('Cancel', '#admin-form');
+            view.displayBtn('Save', '#admin-form');
+            //            adminArea.append(view.displayBtn('Cancel', '#admin-form')).append(view.displayBtn('Save', '#admin-form'));
 
         },
 
         displayBtn: function (btnType, DOMlocation) {
-            $(DOMlocation).append('<button class="admin-btn float-right">' + btnType + '</button>');
+//            $(DOMlocation).append('<button class="admin-btn float-right ' + btnType + '">' + btnType + '</button>');
+            $(DOMlocation).append('<input type="submit" class="admin-btn float-right ' + btnType + '" value="' + btnType + '">');
+        },
+        displayMessage: function (type) {
+            switch (type) {
+            case 'success':
+                alert('Modifié avec succès');
+                break;
+            case 'failure':
+                alert('Impossible à effectuer');
+                break;
+            default:
+                alert('hello');
+            }
         }
     };
 
