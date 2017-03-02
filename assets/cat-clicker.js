@@ -55,7 +55,6 @@ $(function () {
         listenToList: function () {
             $('#names-list p').click(function (e) {
                 var selectedCat = $(this).html();
-                //console.log(selectedCat);
                 view.displayCat(selectedCat);
             });
         },
@@ -63,15 +62,15 @@ $(function () {
         listenToBtn: function () {
             $('#display-area').on('click', '.admin-btn', function (elem) {
                 var whichCat = $(this).closest('section').attr('id');
-                var currentBtn = $(this).html();
+                //                var currentBtn = $(this).html(); //if using button tag
+                var currentBtn = $(this).attr('value');
                 if (currentBtn == 'Admin') {
                     $('.admin-btn.Admin').remove();
                     view.displayAdminForm(whichCat);
                 } else if (currentBtn == 'Save') {
-                    octopus.updateCat;
-                    $('#admin-form').remove();
+                    event.preventDefault();
+                    octopus.updateCat(whichCat);
                     view.displayMessage('success');
-
                 } else if (currentBtn == 'Cancel') {
                     $('#admin-form').remove();
                     view.displayBtn('Admin', '#admin');
@@ -83,12 +82,17 @@ $(function () {
             var alleyCat = Math.floor(Math.random() * octopus.allCats.length);
             view.displayCat(octopus.allCats[alleyCat].id);
         },
-        updateCat: function () {
-            var thisCat = $(this).closest('section').attr('id');
-            octopus.allCats[thisCat].id = $(thisCat + ' #cat-id').value;
-            octopus.allCats[thisCat].picture = $(thisCat + ' #cat-img').value;
-            octopus.allCats[thisCat].NBclicked = $(thisCat + ' #cat-clicks').value;
-            view.displayCatList();
+        updateCat: function (thisCat) {
+            var softKitty = octopus.allCats;
+            for (var meow in softKitty) {
+                if (softKitty[meow].id == thisCat) {
+                    if ($('#' + thisCat + ' #cat-id').val() != "") softKitty[meow].id = $('#' + thisCat + ' #cat-id').val();
+                    if ($('#' + thisCat + ' #cat-img').val() != "") softKitty[meow].picture = $('#' + thisCat + ' #cat-img').val();
+                    if ($('#' + thisCat + ' #cat-clicks').val() != "") softKitty[meow].NBclicked = $('#' + thisCat + ' #cat-clicks').val();
+                    view.displayCatList();
+                    view.displayCat(softKitty[meow].id);
+                }
+            }
         }
     };
 
@@ -98,36 +102,37 @@ $(function () {
             view.displayCatList();
             octopus.randomCat();
             octopus.listenToImg();
-            octopus.listenToList();
             octopus.listenToBtn();
+
         },
         //adds the clicked cat's image to the page
         displayCat: function (kitten) {
+            $('#display-area').html(' ');
             for (var selectedKitty in octopus.allCats) {
                 var thatCat = octopus.allCats[selectedKitty];
                 if (kitten == thatCat.id) {
                     var htmlStr = '<section id="' + thatCat.id + '"><div class="polaroid"><h2>' + thatCat.id + '</h2><img src="' + thatCat.picture + '"><p><strong>Clicks: </strong><span></span></p></div><div id="admin"></section>';
-                    $('#display-area').html(' ').append(htmlStr);
+                    $('#display-area').append(htmlStr);
                     view.displayBtn('Admin', '#admin');
                     $('#display-area span').append(thatCat.NBclicked);
                 }
             }
+            octopus.listenToList();
         },
         //adds cat list on the right
         displayCatList: function () {
+            $('#names-list p').remove();
             for (var kitty in octopus.allCats) {
                 $('#names-list').append('<p>' + octopus.allCats[kitty].id + '</p>');
             }
         },
 
         displayAdminForm: function (kittyAdm) {
-
-            var adminArea = $(document.body + ' #display-area #admin');
-            //var  = $body.// '#display-area #admin');
+            var adminArea = $(document.body).find('#display-area #admin');
             for (var selectedKitty in octopus.allCats) {
                 var thatCat = octopus.allCats[selectedKitty];
                 if (kittyAdm == thatCat.id) {
-                    var htmlStr = '<form id="admin-form"><label for="cat-id">Name</label><input type="text" id="cat-id" value="' + thatCat.id + '"><br><label for="cat-img">Image</label><input type="text" id="cat-img" value="' + thatCat.picture + '"><br><label for="cat-clicks">Nb clicks</label><input type="text" id="cat-clicks" value="' + thatCat.NBclicked + '"><br></form>';
+                    var htmlStr = '<form id="admin-form"><label for="cat-id">Name</label><input type="text" id="cat-id" placeholder="' + thatCat.id + '"><em>current: '+ thatCat.id + '</em><br><label for="cat-img">Image</label><input type="text" id="cat-img" placeholder="' + thatCat.picture + '"><em>current: '+ thatCat.picture + '</em><br><label for="cat-clicks">Nb clicks</label><input type="number" id="cat-clicks" placeholder="' + thatCat.NBclicked + '"><em>current: '+ thatCat.NBclicked + '</em><br></form>';
                     adminArea.append(htmlStr);
                 }
             }
@@ -138,7 +143,7 @@ $(function () {
         },
 
         displayBtn: function (btnType, DOMlocation) {
-//            $(DOMlocation).append('<button class="admin-btn float-right ' + btnType + '">' + btnType + '</button>');
+            //            $(DOMlocation).append('<button class="admin-btn float-right ' + btnType + '">' + btnType + '</button>');
             $(DOMlocation).append('<input type="submit" class="admin-btn float-right ' + btnType + '" value="' + btnType + '">');
         },
         displayMessage: function (type) {
